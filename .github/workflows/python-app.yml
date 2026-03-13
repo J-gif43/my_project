@@ -1,4 +1,4 @@
-name: Python CI
+name: Python CI/CD
 
 on:
   push:
@@ -7,19 +7,27 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
-    - name: Install dependencies
-      run: pip install pytest
+      - name: Install dependencies
+        run: pip install pytest
 
-    - name: Run tests
-      run: pytest
+      - name: Run tests
+        run: pytest
+
+      - name: Deploy to Render
+        env:
+          RENDER_API_KEY: ${{ rnd_nw9DdZWlIhGc9zLRmTSwWCXHCgaQ }}
+          RENDER_SERVICE_ID: ${{ srv-d6q5em95pdvs73bnlfg0 }}
+        run: |
+          curl -X POST "https://api.render.com/deploy/srv-${srv-d6q5em95pdvs73bnlfg0}" \
+               -H "Authorization: Bearer ${rnd_nw9DdZWlIhGc9zLRmTSwWCXHCgaQ}"
